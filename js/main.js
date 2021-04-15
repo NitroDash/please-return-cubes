@@ -8,6 +8,7 @@ var image = {};
 
 var cubes = [];
 var colorGrids = [];
+var bgCircles = [];
 
 function loadJSON(filename,callback) {   
     var xobj = new XMLHttpRequest();
@@ -62,12 +63,18 @@ function loadFiles(loads, callback) {
 
 function init() {
     canvas = document.getElementById("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     ctx = canvas.getContext("2d");
     startImageLoad("cube");
-    cubes.push(new RotateCube(250, 400));
-    cubes.push(new RotateCube(1300, 400));
+    cubes.push(new RotateCube(250, 400, 1));
+    cubes.push(new RotateCube(1300, 400, 1.1));
     colorGrids.push(new ColorGrid(150, 100));
-    colorGrids.push(new ColorGrid(130, -80));
+    colorGrids.push(new RotatingColorGrid(130, -80));
+    colorGrids.push(new SinusoidColorGrid(-60, 20));
+    for (var i = 0; i < 10; i++) {
+        bgCircles.push(new BackgroundCircle());   
+    }
     requestAnimationFrame(updateAndRender);
 }
 
@@ -87,6 +94,9 @@ function update(dt) {
     for (var i = 0; i < colorGrids.length; i++) {
         colorGrids[i].update(dt);
     }
+    for (var i = 0; i < bgCircles.length; i++) {
+        bgCircles[i].update(dt);
+    }
 }
 
 function render() {
@@ -99,6 +109,11 @@ function render() {
     for (var i = 0; i < colorGrids.length; i++) {
         colorGrids[i].render(ctx);
     }
+    
+    for (var i = 0; i < bgCircles.length; i++) {
+        bgCircles[i].render(ctx);
+    }
+    
     ctx.globalCompositeOperation = "source-over";
     
     ctx.font = "200px serif";
@@ -107,6 +122,10 @@ function render() {
     ctx.fillText("Please", canvas.width/2, 300);
     ctx.fillText("Return", canvas.width/2, 500);
     ctx.fillText("Cubes", canvas.width/2, 700);
+    ctx.strokeStyle = "#000";
+    ctx.strokeText("Please", canvas.width/2, 300);
+    ctx.strokeText("Return", canvas.width/2, 500);
+    ctx.strokeText("Cubes", canvas.width/2, 700);
     for (var i = 0; i < cubes.length; i++) {
         cubes[i].render(ctx);
     }
